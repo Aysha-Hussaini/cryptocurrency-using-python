@@ -6,15 +6,13 @@ def crypto_hash(*args):
     Return a sha-256 hash of given arguments.
     """
     
-    #stringified_data = json.dumps(data)
-    print(f'args:{args}')
-
-    joined_data = ''.join(args)
-    print(f'joined_data : {joined_data}')
+    stringified_args = sorted(map( lambda data:json.dumps(data), args))
+    joined_data = ''.join(stringified_args)
+    
     return hashlib.sha256(joined_data.encode('utf-8')).hexdigest()
 
 def main():
-    print(f"crypto_hash(['one','two','three']) : {crypto_hash(['one','two','three'])}")
+    print(f"crypto_hash(1,[5],'three') : {crypto_hash(1,[5],'three')}")
 
 if __name__ == "__main__":
     main()
