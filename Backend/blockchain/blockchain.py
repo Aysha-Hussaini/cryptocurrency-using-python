@@ -1,4 +1,4 @@
-from block import Block
+from Backend.blockchain.block import Block
 class Blockchain:
     """
     Blockchain is a open distributed and decentralized ledger of transactions, implemented as list of blocks-data sets of transactions
