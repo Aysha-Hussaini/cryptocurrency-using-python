@@ -79,8 +79,9 @@ class Block:
         if (new_timestamp - last_block.timestamp) < MINERATE:
             return    last_block.difficulty + 1
 
-        if (last_block.difficulty -1) > 0:
-            return last_block.difficulty - 1
+        if (new_timestamp - last_block.timestamp) > MINERATE:
+            if (last_block.difficulty -1) > 0:
+                return last_block.difficulty - 1
         
         return 1
 
@@ -88,7 +89,7 @@ class Block:
 def main():
     #print(f'block.py __name__ : {__name__}'
     genesis_block = Block.genesis()
-    block = Block.mine_block(genesis_block, 'safi')
+    block = Block.mine_block(genesis_block, '2')
 
     print(block)
 

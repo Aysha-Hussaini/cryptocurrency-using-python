@@ -17,6 +17,8 @@ def main():
     blockchain.add_block('one')
     blockchain.add_block('two')
     blockchain.add_block('three')
+    blockchain.add_block('5')
+    blockchain.add_block('1')
     print(blockchain)
     print(f'blockchain.py __name__ : {__name__}')
 
