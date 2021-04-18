@@ -1,6 +1,7 @@
 import time
 from Backend.util.crypto_hash import crypto_hash
 from Backend.config import MINERATE
+from Backend.util.hex_to_binary import hex_to_binary
 ##globalvariable
 GENESIS_DATA = {
     'data' : [],
@@ -48,10 +49,13 @@ class Block:
         nonce = 0
         hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
 
-        while hash[0:difficulty] != '0' * difficulty:
+        while hex_to_binary(hash)[0:difficulty] != '0' * difficulty:
             nonce += 1
             timestamp = time.time_ns()
+            difficulty = Block.adjust_difficulty(last_block, timestamp)
             hash = crypto_hash(timestamp, last_hash, data, difficulty, nonce)
+
+
 
         return Block(data, timestamp, last_hash, hash, difficulty, nonce)
 
@@ -77,11 +81,11 @@ class Block:
         Decrease difficulty for slowly mined blocks.
         """
         if (new_timestamp - last_block.timestamp) < MINERATE:
-            return    last_block.difficulty + 1
+            return last_block.difficulty + 1
 
-        if (new_timestamp - last_block.timestamp) > MINERATE:
-            if (last_block.difficulty -1) > 0:
-                return last_block.difficulty - 1
+        
+        if (last_block.difficulty -1) > 0:
+            return last_block.difficulty - 1
         
         return 1
 
@@ -89,7 +93,7 @@ class Block:
 def main():
     #print(f'block.py __name__ : {__name__}'
     genesis_block = Block.genesis()
-    block = Block.mine_block(genesis_block, '2')
+    block = Block.mine_block(genesis_block, 'foooooooooooooo')
 
     print(block)
 
