@@ -31,6 +31,15 @@ class Blockchain:
 
         self.chain = chain
 
+    def to_json(self):
+        """
+        The goal of this function is to serialize the blockchain into lists of blocks.
+        """
+
+        return list (map(lambda block: block.to_json(), self.chain))
+
+    
+
     @staticmethod
     def is_valid_chain(chain):
         """
