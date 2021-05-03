@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "blockchain-env/Scripts/python.exe",
+    "python.pythonPath": "/Users/aysha/Desktop/cryptocurrency-using-python/blockchain-env/bin/python3.9",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     
