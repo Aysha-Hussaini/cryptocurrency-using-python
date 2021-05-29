@@ -9,6 +9,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
 #ec stand for elliptic cryptography
 from cryptography.hazmat.primitives import hashes
+from cryptography.exceptions import InvalidSignature
 
 class Wallet:
     """
@@ -29,15 +30,37 @@ class Wallet:
         """
 
         return self.private_key.sign(json.dumps(data).encode('utf-8'), ec.ECDSA(hashes.SHA256()))
+
+    @staticmethod
+    def verify_sign(public_key, data, signature):
+        """
+        Verify signature based on original public key and data.
+        """
+        try:
+            public_key.verify(
+                signature, 
+                json.dumps(data).encode('utf-8'), 
+                ec.ECDSA(hashes.SHA256()) )
+            return True
+        except InvalidSignature:
+            return False
         
+
+
 
 def main():
     wallet = Wallet()
     print(f' wallet : {wallet.__dict__}')
 
     data = {'foo': 'bar'}
+    signature = wallet.sign(data)
+    print(f'signature : {signature}')
 
-    print(f'signature : {wallet.sign(data)}')
+    should_be_valid = wallet.verify_sign(wallet.public_key, data, signature)
+    print(f'should_be_valid:{should_be_valid}')
+
+    should_not_be_valid = wallet.verify_sign(Wallet().public_key, data, signature)
+    print(f'should_not_be_valid:{should_not_be_valid}')
 
 if __name__ == '__main__':
     main()
