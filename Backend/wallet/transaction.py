@@ -8,14 +8,22 @@ class Transaction():
     Documents exchange of currency from sender to one or more recipients
     """
 
-    def __init__(self, sender_wallet, recipient, amount):
-        self.id = str(uuid.uuid4())[0:8]
-        self.output = self.create_output(
+    def __init__(self, 
+            sender_wallet=None, 
+            recipient=None, 
+            amount=None,
+            id=None,
+            input=None,
+            output=None
+            #None represents a variable that hasn't been given a default value
+    ):
+        self.id = id or str(uuid.uuid4())[0:8]
+        self.output = output or self.create_output(
             sender_wallet,
             recipient,
             amount
         )
-        self.input = self.create_input(sender_wallet, self.output)
+        self.input = input or self.create_input(sender_wallet, self.output)
 
     def create_output(self, sender_wallet, recipient, amount):
         """
@@ -62,6 +70,21 @@ class Transaction():
 
         self.input = self.create_input(sender_wallet, self.output) 
 
+    def to_json(self):
+        """
+        Serialize the data into it's dictionary representation
+        """
+        return self.__dict__
+
+    @staticmethod
+    def from_json(transaction_json):
+        """
+        Deserialize the transaction data in json form into transaction instance.
+        """
+        return Transaction(
+            **transaction_json
+        )
+    
     @staticmethod
     def validate_transaction(transaction):
         """
@@ -79,15 +102,19 @@ class Transaction():
             transaction.input['signature']
         ):
             raise Exception("Invalid transaction signature")
-
-
+    
+   
 def main():
     sender_wallet = Wallet()
 
     transaction = Transaction(sender_wallet, 'recipient', 12)
-    print(f' transaction : {transaction.__dict__}')
+    
 
-    print(f'transaction output = {sum(transaction.output.values())} ')
+    transaction_json = transaction.to_json()
+    restored_json = transaction.from_json(transaction_json)
+
+    print(f' transaction_json : {transaction_json}')
+    print(f' restored_json.__dict__ : {restored_json.__dict__}')
 
 if __name__ == "__main__":
     main()

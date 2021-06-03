@@ -1,13 +1,18 @@
 import os
 import requests
 import random
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from Backend.blockchain.blockchain import Blockchain
+from Backend.wallet.wallet import Wallet
+from Backend.wallet.transaction import Transaction
+from Backend.wallet.transaction_pool import TransactionPool
 from Backend.pubsub import PubSub
 
 app = Flask(__name__)
-blockchain= Blockchain()
-pubsub = PubSub(blockchain)
+blockchain = Blockchain()
+wallet = Wallet()
+transaction_pool = TransactionPool()
+pubsub = PubSub(blockchain, transaction_pool)
 
 @app.route('/')
 def route_default():
@@ -27,7 +32,23 @@ def route_blockchain_mine():
 
     block = blockchain.chain[-1]
     pubsub.broadcast_block(block)
+    #jsonify accepts only serialized data - 
+    # serialization and jsonify is necessary for https requests 
     return jsonify(block.to_json())
+
+@app.route('/wallet/transact', methods= ['POST'])
+def route_wallet_transact():
+    #{'recipient' : 'foo', 'amount' = 15}
+    transaction_data = request.get_json()
+    transaction = transaction_pool.existing_transaction(wallet.address)
+    if transaction:
+        transaction.update(wallet, transaction_data['recipient'], transaction_data['amount'])    
+    else:
+        transaction = Transaction(wallet, transaction_data['recipient'], transaction_data['amount'])
+
+    pubsub.broadcast_transaction(transaction)
+    
+    return jsonify(transaction.to_json()) 
 
 ROOT_PORT = 5000
 PORT = ROOT_PORT
