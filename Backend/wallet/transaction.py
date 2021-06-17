@@ -102,7 +102,7 @@ class Transaction():
             transaction.input['signature']
         ):
             raise Exception("Invalid transaction signature")
-    
+
    
 def main():
     sender_wallet = Wallet()

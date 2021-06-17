@@ -82,6 +82,31 @@ class Wallet:
             return True
         except InvalidSignature:
             return False
+
+    @staticmethod
+    def calculate_balance(blockchain, address):
+        """
+        Calculate balance of given address wallet considering transaction data within blockchain.
+
+        Balance is found by adding the output values that belongs to the address 
+        since the most recent transaction by the address.
+        """
+        balance = STARTING_BALANCE
+
+        for block in blockchain.chain:
+            for transaction in block.data:
+                # using bracket syntax insead of transaction.input
+                # because the transactions are stored in serialized form in the blocks 
+                if transaction['input']['address'] == address:
+                    # Any time wallet address conducts a new transaction, it resets it's balance
+                    balance = transaction['output'][address]
+                elif address in transaction['output']:
+                    balance += transaction['output'][address]
+
+        return balance            
+
+
+
         
 
 

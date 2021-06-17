@@ -4,6 +4,8 @@ from pubnub.pnconfiguration import PNConfiguration
 from pubnub.callbacks import SubscribeCallback
 from Backend.blockchain.block import Block
 from Backend.wallet.transaction import Transaction
+from Backend.blockchain.blockchain import Blockchain
+from Backend.wallet.transaction_pool import TransactionPool
 
 pnconfig = PNConfiguration()
 pnconfig.subscribe_key = 'sub-c-16e4cd48-a5fc-11eb-86bf-e27ecfa4e4f1'
@@ -30,6 +32,7 @@ class Listener(SubscribeCallback):
             potential_chain.append(block)
             try:
                 self.blockchain.replace_chain(potential_chain)
+                self.transaction_pool.clear_blockchain_transactions(self.blockchain)
                 print(f'-- Successfully completed replacement of chain')
             except Exception as e:
                 print(f'\n --Did not replace the chain :{e}')
@@ -72,7 +75,8 @@ class PubSub():
 def main():
     #Delaying so that subscribtion is done before publish
     time.sleep(1)
-    pubsub = PubSub()
+    
+    pubsub = PubSub(Blockchain(), TransactionPool())
 
     pubsub.publish(CHANNELS['TEST'], {'foo' : 'bar'})
     

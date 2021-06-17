@@ -27,7 +27,7 @@ class Blockchain:
         try:
             Blockchain.is_valid_chain(chain)
         except Exception as e:
-            raise Exception('Cannot replace, incoming chain is invalid : {e}')
+            raise Exception(f'Cannot replace, incoming chain is invalid : {e}')
 
         self.chain = chain
 
@@ -73,11 +73,7 @@ class Blockchain:
 
 def main():
     blockchain = Blockchain()
-    blockchain.add_block('one')
-    blockchain.add_block('two')
-    blockchain.add_block('three')
-    blockchain.add_block('5')
-    blockchain.add_block(1)
+    
     print(blockchain)
   
    

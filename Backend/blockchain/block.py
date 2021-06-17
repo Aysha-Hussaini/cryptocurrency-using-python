@@ -51,7 +51,7 @@ class Block:
     def mine_block(last_block, data):
         """
         Mine a block based on the given last_block and data, until a block hash is found that meets
-        difficulty requirement of proof of work
+        difficulty requirement of proof of work.
         """
         timestamp = time.time_ns()
         last_hash = last_block.hash
@@ -80,8 +80,8 @@ class Block:
         #     'last_hash' = GENESIS_DATA['last_hash'],
         #     'hash' = GENESIS_DATA['hash'], 
         #     )
-
-        return Block(**GENESIS_DATA) #This syntax unpacks as above 
+        #This syntax unpacks as above
+        return Block(**GENESIS_DATA)  
 
     @staticmethod
     def from_json(block_json):
@@ -93,7 +93,7 @@ class Block:
     @staticmethod
     def adjust_difficulty(last_block, new_timestamp):
         """
-        Calculate dificulty according to MINE RATE
+        Calculate difficulty according to MINE RATE
         Increase difficulty for quickly mined blocks.
         Decrease difficulty for slowly mined blocks.
         """
@@ -136,10 +136,11 @@ class Block:
 def main():
     genesis_block = Block.genesis()
     bad_block = Block.mine_block(genesis_block, 'foo')
-    bad_block.last_hash = 'evil_data'
     
     try:
         Block.is_valid(genesis_block, bad_block)
+        print(' NOT A BAD BLOCK')
+        print(f'bad_block : {bad_block}' )
     except Exception as e:
         print (f'is_valid_block: {e}')
 
