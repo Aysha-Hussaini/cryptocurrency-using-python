@@ -1,5 +1,7 @@
 from Backend.blockchain.block import Block, GENESIS_DATA
-
+from Backend.wallet.transaction import Transaction
+from Backend.wallet.wallet import Wallet
+from Backend.config import MINING_REWARD_INPUT
 class Blockchain:
     """
     Blockchain is a open distributed and decentralized ledger of transactions, implemented 
@@ -69,7 +71,49 @@ class Blockchain:
 
             Block.is_valid(last_block, block)
 
+        Blockchain.is_valid_transaction_chain(chain)
 
+    @staticmethod
+    def is_valid_transaction_chain(chain):
+        """
+        Enfoce the rules of a chain composed of blocks contanining transactions.
+            -Each transaction must appear only once in the chain.
+            -There can only be one mining reward per block.
+            -Each transaction must be valid.
+        """
+        transaction_ids = set()
+        #set is used because it is unchangeable and duplicates are not allowed.
+
+        for i in range(len(chain)): 
+            block = chain[i]
+            has_mining_reward = False
+
+            for transaction_json in block.data:
+                transaction = Transaction.from_json(transaction_json)
+                
+                if transaction.id in transaction_ids:
+                    raise Exception(f'Transaction id - {transaction.id} is not unique')
+
+                transaction_ids.add(transaction.id)
+
+                if transaction.input == MINING_REWARD_INPUT:
+                    if has_mining_reward == True:
+                        raise Exception('There can be only one mining reward per block'\
+                             f'Check block with hash: {block.hash}'
+                        )
+                    has_mining_reward = True
+                else:
+                    historic_blockchain = Blockchain()
+                    historic_blockchain.chain = chain[0:i]
+                    historic_balance = Wallet.calculate_balance(
+                        historic_blockchain,
+                        transaction.input['address']
+                    )
+
+                    if historic_balance != transaction.input['amount']:
+                        raise Exception(f'Transaction- {transaction.id} has an invalid amount')
+
+                Transaction.validate_transaction(transaction)
 
 def main():
     blockchain = Blockchain()
